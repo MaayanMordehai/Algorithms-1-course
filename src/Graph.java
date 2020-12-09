@@ -1,8 +1,16 @@
 
 public class Graph {
+	
+	// The verticals in the graph
 	private Vertex[] verticals;
+	
+	// number of verticals
 	private int numOfVerticals;
 	
+	/**
+	 * Constructor, building graph with the given number of verticals
+	 * @param numVerticals
+	 */
 	public Graph(int numVerticals) {
 		numOfVerticals = numVerticals;
 		verticals = new Vertex[numVerticals];
@@ -11,10 +19,19 @@ public class Graph {
 		}
 	}
 	
+	/**
+	 * Getter of the verticals in the graph
+	 * @return the verticals in the graph
+	 */
 	public Vertex[] getVerticals() {
 		return verticals;
 	}
 	
+	/**
+	 * Getter of the vertex
+	 * @param id the id of the vertex
+	 * @return the vertex
+	 */
 	public Vertex getVertex(int id) {
 		if (id >= numOfVerticals) {
 			return null;
@@ -22,6 +39,12 @@ public class Graph {
 		return verticals[id];
 	}
 	
+	/**
+	 * Adding edge between 2 verticals in the graph.
+	 * @param vId id of first vertex
+	 * @param uId id of second vertex
+	 * @param weight the weight of the edge between them
+	 */
 	public void addEdge(int vId, int uId, int weight) {
 		Vertex v = getVertex(vId);
 		Vertex u = getVertex(uId);
@@ -31,6 +54,10 @@ public class Graph {
 		}
 	}
 	
+	/**
+	 * Getter of number of verticals
+	 * @return number of verticals in the graph
+	 */
 	public int getNumOfVerticals() {
 		return numOfVerticals;
 	}

@@ -2,6 +2,7 @@
 public class Heap {
 	
 	// The weights to get to the vertex mapped by verticals id
+	// will contain: [[vertexid, weight], [vertexid, weight] ...]
 	private int[][] weights;
 	
 	// The positions to keep track of which vertex is on which position in weight
@@ -11,7 +12,8 @@ public class Heap {
 	private int size;
 	
 	/**
-	 * Constructor - building a default heap 
+	 * Constructor - building a default heap, all weights infinity
+	 * O(n) 
 	 */
 	public Heap(int numVertex) {
 		size = numVertex;
@@ -24,44 +26,59 @@ public class Heap {
 		}
 	}
 	
-	
+	/**
+	 * Get the [vertexid, weight] of the minimum weight in the heap
+	 * O(1)
+	 * @return [vertexid, weight] of the minimum weight
+	 */
 	public int[] minimum(){
 		return weights[0];
 	}
 	
 	/**
-	 * This is O(log(n))
+	 * Removing the minimum from the heap
+	 * O(log(n))
 	 * @return the minimum we just removed
 	 */
 	public int[] extractMin(){
 		int[] minWeight = minimum();
 		int[] lastWeight = weights[size - 1];
+		
 		// replace root weight with last weight
 		weights[0] = lastWeight;
 		weights[size - 1] = minWeight;
-		// replace positions
+		
+		// replace positions accordingly
 		positions[minWeight[0]] = size-1;
 		positions[lastWeight[0]] =  0;
+		
 		// update size
 		size--;
+		
 		// reorder heap
 		heapify(0);
+		
 		return minWeight;
 	}
 	
 	/**
 	 * This function is updating weight for vertex
-	 * @param vertexId the vertex to update the weight of
-	 * @param weight the weight to update to
+	 * O(log(n))
+	 * @param vertexId the vertex to update it's weight
+	 * @param weight the new weight
 	 */
 	public void updateWeight(int vertexId, int weight) {
+		
 		// Getting the position of the weight to update
 		int index = positions[vertexId];
+		
 		// Setting the vertex to the new weight
 		weights[index][1] = weight;
 		
+		// fixing the heap
+		// from down to up, if the new weight smaller than his parent, switching them
+		// this is O(log(n))
 		int parent = (index-1)/2;
-		// This loop is O(log(n)) because it goes up to the father each time
 		while (index > 0 && weights[index][1] < weights[parent][1]) {
 			int[] currentWeight = weights[index];
 			int[] parentWeight = weights[parent];
@@ -80,12 +97,19 @@ public class Heap {
 		}
 	}
 	
+	/**
+	 * Heapify
+	 * O(log(n))
+	 * @param index 
+	 */
 	private void heapify(int index) {
-
+		// Getting the sons indexes
 		int indexLeft = index*2 + 1;
 		int indexRight = index*2 + 2;
 		
 		int minIndex = index;
+		
+		// Getting the minimum of the left/right/parent
 		
 		if (indexLeft < size && weights[minIndex][1] > weights[indexLeft][1]) {
 			minIndex = indexLeft;
@@ -95,22 +119,28 @@ public class Heap {
 			minIndex = indexRight;
 		}
 
+		// If the minimum is not the parent the heap is not good and we need to order it
 		if (minIndex != index) {
 			int[] minWeight = weights[minIndex];
 			int[] otherWeight = weights[index];
 			
-			// swapping the weights to be minWeight -> index, otherWeight -> minIndex
+			// Swapping the weights
 			weights[minIndex] = otherWeight;
 			weights[index] = minWeight;
 			
-			// swapping the positions of the indexes in the positions vector 
+			// Swapping the positions 
 			positions[minWeight[0]] = index;
 			positions[otherWeight[0]] = minIndex;
 			
+			// Ordering if needed the weight we just replaced
 			heapify(minIndex);
 		}
 	}
 	
+	/**
+	 * Checking if heap is empty
+	 * @return true if empty, false if not
+	 */
 	public boolean isEmpty() {
 		return size == 0;
 	}
