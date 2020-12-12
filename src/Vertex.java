@@ -34,6 +34,14 @@ public class Vertex {
 	}
 	
 	/**
+	 * Remove a neighbor 
+	 * @param neighbor the neighbor to remove
+	 */
+	public void removeNeighbor(Vertex neighbor) {
+		neighbors.removeIf(n -> n.getDestination().getID() == neighbor.getID());
+	}
+	
+	/**
 	 * Getter for the vertex neighbors
 	 * @return the vertex neighbors
 	 */
@@ -46,12 +54,13 @@ public class Vertex {
 	 */
 	public String toString() {
 		String printMe = String.format("id %s, adjacent: [", id);
-		
+		int count = 0;
 		for (Neighbor n : neighbors) {
 				printMe = String.format("%s id: %s weight: %s,", printMe, n.getDestination().getID(), n.getWeight());
+				count++;
 		}
 		printMe = printMe.substring(0, printMe.length()-1);
-		printMe = String.format("%s]", printMe);
+		printMe = String.format("%s] num of neigboors: %s", printMe, count);
 		return printMe;
 	}
 }

@@ -55,10 +55,33 @@ public class Graph {
 	}
 	
 	/**
+	 * Removing edge between 2 verticals in the graph
+	 * @param vId id of first vertex
+	 * @param uId id of second vertex
+	 */
+	public void removeEdge(int vId, int uId) {
+		Vertex v = getVertex(vId);
+		Vertex u = getVertex(uId);
+		if (v != null && u != null) {
+			v.removeNeighbor(u);
+			u.removeNeighbor(v);
+		}
+	}
+	
+	/**
 	 * Getter of number of verticals
 	 * @return number of verticals in the graph
 	 */
 	public int getNumOfVerticals() {
 		return numOfVerticals;
+	}
+	
+	/**
+	 * Printing the graph
+	 */
+	public void printMe() {
+		for (Vertex v : getVerticals()) {
+			System.out.println(v);
+		}
 	}
 }
