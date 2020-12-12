@@ -1,3 +1,6 @@
+import java.util.LinkedList;
+import java.util.Random; 
+
 
 public class main {
 
@@ -40,7 +43,7 @@ public class main {
 			}
 		}
 		
-		// creating the MST graph by the parameters we got
+		// creating the MST graph by the parameters we found
 		Graph mst = new Graph(g.getNumOfVerticals());
 		
 		for (int i = 0; i < g.getNumOfVerticals(); i++) {
@@ -51,35 +54,165 @@ public class main {
 		return mst;
 	}
 	
-	public static void main(String[] args) {
-		Graph g = new Graph(12);
+	public static Graph addEdgeToMST(Graph mst, Vertex v, Vertex u, int weight) {
 		
-		g.addEdge(0, 2, 23);
-		g.addEdge(0, 3, 5);
-		g.addEdge(0, 1, 12);
-		g.addEdge(1, 5, 7);
-		g.addEdge(2, 3, 18);
-		g.addEdge(2, 4, 17);
-		g.addEdge(3, 5, 10);
-		g.addEdge(3, 6, 9);
-		g.addEdge(4, 8, 16);
-		g.addEdge(4, 9, 14);
-		g.addEdge(5, 11, 20);
-		g.addEdge(6, 7, 4);
-		g.addEdge(6, 9, 3);
-		g.addEdge(7, 11, 8);
-		g.addEdge(8, 10, 7);
-		g.addEdge(10, 11, 12);
+		// finding the path between v and u using BFS
+		int[][] bfsResult = BFS(mst, v);
+		int[] parent = bfsResult[1];
+		int[] key = bfsResult[0];
+
 		
+		// Finding the edge with the max weight in the path from v to u.
+		int currVertex = u.getID();		
+		int maxVertex1 = -1;
+		int maxVertex2 = -1;
+		int maxWeight = -1; 
+		while (key[currVertex] != 0) {
+			int parentVertex = parent[currVertex];
+			for (Neighbor n : mst.getVertex(parentVertex).getNeighbors()) {
+				if (n.getDestination().getID() == currVertex) {
+					if (n.getWeight() > maxWeight) {
+						maxWeight = n.getWeight();
+						maxVertex1 = currVertex;
+						maxVertex2 = parentVertex;
+					}
+				}
+			}
+			currVertex = parentVertex;
+		}
+		
+		// if the new weight is smaller, we need to change the mst
+		if (weight < maxWeight) {
+			mst.removeEdge(maxVertex1, maxVertex2);
+			mst.addEdge(v.getID(), u.getID(), weight);
+		}
+
+		return mst;
+	}
+	
+	public static int[][] BFS(Graph g, Vertex start) {
+		// The parent of the vertex
+		int[] parent = new int[g.getNumOfVerticals()];
+		// The distance to get to this vertex
+		int[] key = new int[g.getNumOfVerticals()];
+		// marking if a vertex was visited
+		boolean[] visited = new boolean[g.getNumOfVerticals()];
+		
+		// initiating the arrays
+		for (Vertex u : g.getVerticals()) {
+			visited[u.getID()] = false;
+			key[u.getID()] = Integer.MAX_VALUE;
+			parent[u.getID()] = -1;
+		}
+		LinkedList<Integer> q = new LinkedList<Integer>();
+		
+		// starting from start vertex
+		key[start.getID()] = 0;
+		visited[start.getID()] = true;
+		q.add(start.getID());
+		
+		while (!q.isEmpty()) {
+			Vertex u = g.getVertex(q.poll());
+			for (Neighbor v : u.getNeighbors()) {
+				if (!visited[v.getDestination().getID()]) {
+					visited[v.getDestination().getID()] = true;
+					key[v.getDestination().getID()] = key[u.getID()] + 1;
+					parent[v.getDestination().getID()] = u.getID();
+					q.add(v.getDestination().getID());
+				}
+			}
+		}
+		int[][] result = new int[2][];
+		result[0] = key;
+		result[1] = parent;
+		
+		return result;
+	}
+	
+	public static void main(String[] args) { 
+        Random rand = new Random();
+
+		Graph g = new Graph(20);
+		
+		// This is for making sure we don't create more then one edge to the same vertex
+		boolean[][] isThereEdge = new boolean[g.getNumOfVerticals()][g.getNumOfVerticals()];
+		for (int i = 0; i < g.getNumOfVerticals(); i++) {
+			for (int j = 0; j < g.getNumOfVerticals(); j++) {				
+				isThereEdge[i][j] = false;
+			}
+		}
+		
+		// creating the edges
+		int numOfEdges = 50;
+		while (numOfEdges > 0) {
+			int v1 = rand.nextInt(g.getNumOfVerticals());
+			int v2 = rand.nextInt(g.getNumOfVerticals());
+			if (!isThereEdge[v1][v2] && v1 != v2) {
+				g.addEdge(v1, v2, rand.nextInt(1000) + 1);
+				isThereEdge[v1][v2] = true;
+				isThereEdge[v2][v1] = true;
+				numOfEdges--;
+			}
+		}
+		
+		System.out.println("==========================================================");
 		System.out.println("original graph:");
-		for (Vertex v : g.getVerticals()) {
-			System.out.println(v.toString());
-		}
+		System.out.println("---------------");
+		g.printMe();
 		
+		System.out.println("==========================================================");
+		
+		// Creating mst graph of our random graph
 		Graph mst = primMST(g);
+		
 		System.out.println("prim MST graph:");
-		for (Vertex v : mst.getVerticals()) {
-			System.out.println(v.toString());
+		System.out.println("---------------");
+		mst.printMe();
+		
+		System.out.println("==========================================================");
+		
+		// Creating one more edge that will not change the mst
+		int v1 = rand.nextInt(g.getNumOfVerticals());
+		int v2 = rand.nextInt(g.getNumOfVerticals());
+		while (isThereEdge[v1][v2] || v1 == v2) {
+			v1 = rand.nextInt(g.getNumOfVerticals());
+			v2 = rand.nextInt(g.getNumOfVerticals());
 		}
+		int weight = 10000;
+		g.addEdge(v1, v2, weight);
+		isThereEdge[v1][v2] = true;
+		isThereEdge[v2][v1] = true;
+		
+		System.out.println("==========================================================");
+		System.out.println("adding edge that will not change the mst");
+		System.out.printf("adding edge between %s, %s with weight %s%n", v1, v2, weight);
+
+		Graph sameMST = addEdgeToMST(mst, g.getVertex(v1), g.getVertex(v2), weight);
+		
+		System.out.println("new prim MST graph (same):");
+		System.out.println("--------------------------");
+		sameMST.printMe();
+		
+		
+		// Creating one more edge that will not change the mst
+		v1 = rand.nextInt(g.getNumOfVerticals());
+		v2 = rand.nextInt(g.getNumOfVerticals());
+		while (isThereEdge[v1][v2] || v1 == v2) {
+			v1 = rand.nextInt(g.getNumOfVerticals());
+			v2 = rand.nextInt(g.getNumOfVerticals());
+		}
+		weight = 0;
+		g.addEdge(v1, v2, weight);
+		isThereEdge[v1][v2] = true;
+		isThereEdge[v2][v1] = true;
+		System.out.println("==========================================================");
+		System.out.println("adding edge that will change the mst");
+		System.out.printf("adding edge between %s, %s with weight %s%n", v1, v2, weight);
+		
+		Graph newMST = addEdgeToMST(mst, g.getVertex(v1), g.getVertex(v2), weight);
+		
+		System.out.println("new prim MST graph:");
+		System.out.println("-------------------");
+		newMST.printMe();
 	}
 }
