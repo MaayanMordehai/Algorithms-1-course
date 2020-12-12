@@ -194,7 +194,7 @@ public class main {
 		sameMST.printMe();
 		
 		
-		// Creating one more edge that will not change the mst
+		// Creating one more edge that will change the mst
 		v1 = rand.nextInt(g.getNumOfVerticals());
 		v2 = rand.nextInt(g.getNumOfVerticals());
 		while (isThereEdge[v1][v2] || v1 == v2) {

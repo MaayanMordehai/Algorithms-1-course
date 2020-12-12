@@ -60,7 +60,7 @@ public class Vertex {
 				count++;
 		}
 		printMe = printMe.substring(0, printMe.length()-1);
-		printMe = String.format("%s] num of neigboors: %s", printMe, count);
+		printMe = String.format("%s]", printMe);
 		return printMe;
 	}
 }
