@@ -143,15 +143,28 @@ public class main {
 		}
 		
 		// creating the edges
-		int numOfEdges = 50;
-		while (numOfEdges > 0) {
+		int minNumOfEdges = 50;
+		while (minNumOfEdges > 0) {
 			int v1 = rand.nextInt(g.getNumOfVerticals());
 			int v2 = rand.nextInt(g.getNumOfVerticals());
 			if (!isThereEdge[v1][v2] && v1 != v2) {
 				g.addEdge(v1, v2, rand.nextInt(1000) + 1);
 				isThereEdge[v1][v2] = true;
 				isThereEdge[v2][v1] = true;
-				numOfEdges--;
+				minNumOfEdges--;
+			}
+		}
+		
+		// making sure our graph is linked
+		for (Vertex v : g.getVerticals()) {
+			if (v.getNeighbors().isEmpty()) {
+				int u = rand.nextInt(g.getNumOfVerticals());
+				while (u == v.getID()) {
+					u = rand.nextInt(g.getNumOfVerticals());
+				}
+				g.addEdge(u, v.getID(), rand.nextInt(1000) + 1);
+				isThereEdge[u][v.getID()] = true;
+				isThereEdge[v.getID()][u] = true;
 			}
 		}
 		
@@ -183,7 +196,6 @@ public class main {
 		isThereEdge[v1][v2] = true;
 		isThereEdge[v2][v1] = true;
 		
-		System.out.println("==========================================================");
 		System.out.println("adding edge that will not change the mst");
 		System.out.printf("adding edge between %s, %s with weight %s%n", v1, v2, weight);
 
@@ -193,6 +205,7 @@ public class main {
 		System.out.println("--------------------------");
 		sameMST.printMe();
 		
+		System.out.println("==========================================================");
 		
 		// Creating one more edge that will change the mst
 		v1 = rand.nextInt(g.getNumOfVerticals());
@@ -205,7 +218,7 @@ public class main {
 		g.addEdge(v1, v2, weight);
 		isThereEdge[v1][v2] = true;
 		isThereEdge[v2][v1] = true;
-		System.out.println("==========================================================");
+		
 		System.out.println("adding edge that will change the mst");
 		System.out.printf("adding edge between %s, %s with weight %s%n", v1, v2, weight);
 		
