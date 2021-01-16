@@ -7,3 +7,6 @@
    - create mst from your graph and print it.
    - add an edge that will not change the mst and print the mst.
    - add an edge that will change the mst and print the new mst.
+
+## Second Assignment
+Solve Box Stacking problem and print the tower in O(n^2)
