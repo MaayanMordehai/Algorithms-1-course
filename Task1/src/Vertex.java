@@ -54,10 +54,8 @@ public class Vertex {
 	 */
 	public String toString() {
 		String printMe = String.format("id %s, adjacent: [", id);
-		int count = 0;
 		for (Neighbor n : neighbors) {
 				printMe = String.format("%s id: %s weight: %s,", printMe, n.getDestination().getID(), n.getWeight());
-				count++;
 		}
 		printMe = printMe.substring(0, printMe.length()-1);
 		printMe = String.format("%s]", printMe);
